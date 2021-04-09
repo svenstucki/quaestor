@@ -1,0 +1,27 @@
+version: '3'
+networks:
+    web:
+        external: true
+volumes:
+    cache:
+services:
+    $SERVICE_NAME:
+        image: "$CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH"
+        container_name: "$SERVICE_NAME"
+        environment:
+            - "ROCKET_LOG_LEVEL=debug"
+            - "ROCKET_ADDRESS=0.0.0.0"
+        volumes:
+            - /opt/quaestor/invoices:/app/invoices
+        networks:
+            - web
+        labels:
+            - "traefik.http.routers.$SERVICE_NAME.rule=Host(`$SERVICE_DOMAIN`) || Host(`www.$SERVICE_DOMAIN`)"
+            - "traefik.http.routers.$SERVICE_NAME.tls.certresolver=le"
+            - "traefik.http.routers.$SERVICE_NAME.entrypoints=websecure"
+            - "traefik.http.services.$SERVICE_NAME.loadbalancer.server.port=8000"
+            - "traefik.docker.network=web"
+            - "traefik.enable=true"
+        restart: "always"
+        tty: yes
+        stdin_open: true

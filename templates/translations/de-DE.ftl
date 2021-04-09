@@ -1,0 +1,14 @@
+total = Total
+position = Pos.
+price = Preis
+amount = Menge
+invoice = Rechnung
+description = Bezeichnung
+due_on = Zahlbar bis
+account_info = Kontoinformation
+thank_you = Danke
+date_of_invoice = Rechnungsdatum
+contact_person = Ansprechpartner
+reference = Ihre Referenz
+total_excl_vat = Summe (exkl. MWSt)
+vat = MWSt.
