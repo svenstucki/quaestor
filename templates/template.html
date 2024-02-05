@@ -1,0 +1,313 @@
+<html>
+    <head>
+        <style>
+@charset "UTF-8";
+@font-face {
+  font-family: "Source Sans Pro";
+  src: url("templates/fonts/source-sans-pro.regular.ttf") format("ttf");
+}
+@font-face {
+  font-family: "Source Sans Pro";
+  src: url("templates/fonts/source-sans-pro.bold.ttf") format("ttf");
+  font-weight: bold;
+}
+@font-face {
+  font-family: "Pacifico";
+  src: url("templates/fonts/pacifico.regular.ttf") format("ttf");
+}
+@page {
+    size: A4;
+    margin: 1cm;
+}
+
+html {
+    color: {{ data.company.text_color }};
+    font-family: Source Sans Pro;
+    font-size: 10pt;
+    line-height: 1.6;
+}
+
+body {
+    margin: 0;
+    padding-top: 2cm;
+}
+
+p {
+    text-align: justify;
+}
+
+#logo {
+    height: 2cm;
+    position: absolute;
+    right: 1cm;
+    top: 0;
+}
+
+address {
+    font-style: normal;
+    white-space: pre-line;
+}
+address#from {
+    margin-left: 1cm;
+    margin-top: 2cm;
+    font-size: 7pt;
+    text-decoration: underline;
+}
+address#to {
+    margin-left: 1cm;
+    text-align: left;
+}
+
+#date-header {
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
+
+.underline {
+    margin-top: -1em;
+    margin-bottom: 2em;
+    height: 1px;
+    width: 100%;
+    background:
+        linear-gradient(
+            to right,
+            {{ data.company.accent_color }},
+            white
+        );
+}
+
+.flex-space-between {
+    display: flex;
+    justify-content: space-between;
+}
+
+#additional-text {
+    white-space: pre-line;
+    padding-bottom: 3cm;
+    /* page-break-inside: avoid; */
+}
+
+/* tables */
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+table th {
+    border-bottom: .4mm solid {{ data.company.accent_color }};
+    color: {{ data.company.text_color_muted }};
+    font-size: 10pt;
+    /* font-weight: 400; */
+    font-weight: normal;
+    text-transform: uppercase;
+}
+table td {
+    padding-top: 1mm;
+    vertical-align: top;
+}
+table th:last-of-type,
+table td:last-of-type {
+    text-align: right;
+}
+
+#invoice-info {
+    margin-right: 1cm;
+    font-size: 9pt;
+}
+#invoice-info tr,
+#invoice-info td {
+    margin: 0;
+    padding: 0;
+}
+
+table#positions {
+    margin: 2em 0;
+}
+table#positions td,
+table#positions th {
+    padding: 0 1.5pt;
+}
+table#positions tr.total-no-vat {
+    border-top: .4mm solid {{ data.company.text_color }};
+    border-bottom: .2mm solid {{ data.company.text_color_muted }};
+    padding-bottom: .25cm;
+}
+table#positions tr.vat {
+    padding-bottom: .25cm;
+}
+table#positions tr.total {
+    border-top: .4mm solid {{ data.company.text_color }};
+    border-bottom: .4mm solid {{ data.company.accent_color }};
+    font-size: 10pt;
+    font-weight: 400;
+    padding-bottom: .25cm;
+}
+
+#total {
+    background: #f6f6f6;
+    font-size: 10pt;
+    margin: 0;
+    /* margin: 0 -1cm -1cm; */
+    /* padding: 1cm 1cm 1.5cm; */
+    margin: 0 -1cm -1cm;
+    padding: 1cm 1cm 0;
+    /* weasyprint has limited CSS support - e.g. cannot use calc for this */
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: auto;
+}
+#total table {
+    margin-bottom: .5cm;
+}
+#footer_thanks {
+    color: {{ data.company.accent_color }};
+    font-family: Pacifico;
+    content: '{{ t(n="thank_you") }}!';
+}
+#footer_company {
+    color: {{ data.company.text_color_muted }};
+    content: "227 GmbH | In der Ey 33 | CH-8047 Zürich";
+    font-size: 9pt;
+}
+        </style>
+    </head>
+    <body>
+        <img id="logo" src="templates/227-Logo-2024.png" />
+
+        <address id="from"><b>227 GmbH</b> | In der Ey 33 | CH-8047 Zürich</address>
+
+        <div style="display: flex; justify-content: space-between;">
+                <address id="to">
+                    {{- data.address }}
+                </address>
+                <div id="invoice-info">
+                    <table>
+                        <tr>
+                            <td colspan="2">
+                                <b>227 GmbH</b><br />
+                                Sven Stucki
+                                | sven@227.ch<br />
+                                In der Ey 33 | CH-8047 Zürich<br />
+                                <br />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <b>MWST-Nr.</b><br />
+                                CHE-406.591.033 MWST<br />
+                                <br />
+                            </td>
+                        </tr>
+
+                        {#
+                        {% if data.no %}
+                        <tr>
+                            <td>{{ t(n="invoice") }}</td><td>{{ data.no }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if data.date %}
+                        <tr>
+                            <td>{{ t(n="date_of_invoice") }}</td><td>{{ data.date }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if data.contact %}
+                        <tr>
+                            <td>{{ t(n="contact_person") }}</td><td>{{ data.contact }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if data.reference %}
+                        <tr>
+                            <td>{{ t(n="reference") }}</td><td>{{ data.reference }}</td>
+                        </tr>
+                        {% endif %}
+                        #}
+                    </table>
+                </div>
+        </div>
+
+        <p id="date-header">Zürich, {{ data.date | date(format="%d.%m.%Y") }}</p>
+
+        <h3>{{ data.title }}</h3>
+        <div class="underline"></div>
+
+        <p>
+            {% include "body.html" %}
+        </p>
+
+        <table id="positions">
+            <thead>
+                <th>{{ t(n="date") }}</th>
+                <th>{{ t(n="description") }}</th>
+                <th>{{ t(n="amount") }}</th>
+                <th>{{ t(n="price") }}</th>
+                <th>{{ t(n="total") }}</th>
+            </thead>
+            <tbody>
+                {% for position in data.positions %}
+                <tr>
+                    <td>{{ position.date }}</td>
+                    <td>{{ position.text }}</td>
+                    <td>{{ position.count }}</td>
+                    <td>{{ data.currency }}&nbsp;{{ position.cost }}</td>
+                    <td>{{ data.currency }}&nbsp;{{ position.count * position.cost }}</td>
+                </tr>
+                {% endfor %}
+
+                {% if data.vat_rate > 0 %}
+                <tr class="total-no-vat">
+                    <td></td>
+                    <td>{{ t(n="total_excl_vat") }}</td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ data.currency }}&nbsp;{{ total }}</td>
+                </tr>
+                <tr class="vat">
+                    <td></td>
+                    <td>{{ t(n="vat") }} {{ data.vat_rate }}% (Dienstleistung in 2023)</td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ data.currency }}&nbsp;{{ vat }}</td>
+                </tr>
+                {% endif %}
+                <tr class="total">
+                    <td></td>
+                    <td>{{ t(n="total") }}</td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ data.currency }}&nbsp;{{ total + vat }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p id="additional-text">
+            {{- data.additonal_text }}
+        </p>
+
+        <div id="total">
+            <table>
+                <thead>
+                    <th>{{ t(n="due_on") }}</th>
+                    <th>{{ t(n="account_info") }}</th>
+                    <th>{{ t(n="total") }}</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ data.due | date(format="%d.%m.%Y") }}</td>
+                        <td>
+                            IBAN: CH64 0070 0114 8029 6590 5 / Zürcher Kantonalbank
+                        </td>
+                        <td>
+                            {{ data.currency }} {{ total + vat }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="flex-space-between">
+                <p id="footer_thanks">{{ t(n="thank_you") }}!</p>
+                <p id="footer_company">227 GmbH | In der Ey 33 | CH-8047 Zürich</p>
+            </div>
+        </div>
+    </body>
+</html>

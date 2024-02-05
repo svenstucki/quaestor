@@ -180,23 +180,33 @@ pub struct GenerateData {
     language: String,
     date: String,
     due: String,
-    title: String,
     address: String,
     no: String,
     contact: String,
     reference: String,
+    title: String,
     text: String,
+    additonal_text: String,
     positions: Vec<Position>,
     currency: String,
     vat_rate: f64,
+    company: CompanyData,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Position {
     id: usize,
+    date: String,
     text: String,
     count: f64,
     cost: f64,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CompanyData {
+    accent_color: String,
+    text_color: String,
+    text_color_muted: String,
 }
 
 async fn generate_pdf(
@@ -212,7 +222,7 @@ async fn generate_pdf(
     let mut context = tera::Context::new();
     context.insert("data", data);
 
-    let mut tera = tera::Tera::new("templates/*.tera").unwrap();
+    let mut tera = tera::Tera::new("templates/*.html").unwrap();
 
     {
         let mut options = Options::empty();
@@ -252,12 +262,11 @@ async fn generate_pdf(
         ),
     );
 
-    let render = tera.render("template.html.tera", &context).unwrap();
+    let render = tera.render("template.html", &context).unwrap();
 
     // execute weasyprint to generate pdf
     let mut weasyprint = Command::new("python3")
         .args(&["-m", "weasyprint"])
-        .args(&["-f", "pdf"])
         .args(&["-e", "utf8"])
         .arg("-")
         .arg("-")

@@ -1,4 +1,5 @@
 total = Total
+date = Date
 position = Pos.
 price = Price
 amount = Amount

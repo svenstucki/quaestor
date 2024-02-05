@@ -1,4 +1,5 @@
 total = Total
+date = Datum
 position = Pos.
 price = Preis
 amount = Menge
@@ -6,7 +7,7 @@ invoice = Rechnung
 description = Bezeichnung
 due_on = Zahlbar bis
 account_info = Kontoinformation
-thank_you = Danke
+thank_you = Vielen Dank
 date_of_invoice = Rechnungsdatum
 contact_person = Ansprechpartner
 reference = Ihre Referenz

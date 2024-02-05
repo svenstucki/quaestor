@@ -55,12 +55,10 @@
             description="Invoice Number"
             label-for="invoice-no"
             invalid-feedback="Please specify an invoice number."
-            :state="invoice.no.length > 0"
           >
             <b-form-input
               id="invoice-no"
               v-model="invoice.no"
-              :state="invoice.no.length > 0"
               trim
             ></b-form-input>
           </b-form-group>
@@ -84,12 +82,10 @@
             description="Contact Person"
             label-for="contact-person"
             invalid-feedback="Please specify a contact person."
-            :state="invoice.contact.length > 0"
           >
             <b-form-input
               id="Contact Person"
               v-model="invoice.contact"
-              :state="invoice.contact.length > 0"
               trim
             ></b-form-input>
           </b-form-group>
@@ -106,15 +102,36 @@
           </b-form-group>
 
           <b-form-group
-            description="Text"
+            description="Title"
+            label-for="title"
+          >
+            <b-form-input
+              id="title"
+              v-model="invoice.title"
+              trim
+            ></b-form-input>
+          </b-form-group>
+          <b-form-group
+            description="Invoice text"
             label-for="text"
-            invalid-feedback="Please specify an invoice number."
+            invalid-feedback="Please specify the invoice text."
             :state="invoice.text.length > 0"
           >
             <b-form-textarea
               id="text"
               v-model="invoice.text"
               :state="invoice.text.length > 0"
+              trim
+              style="height: 15em"
+            ></b-form-textarea>
+          </b-form-group>
+          <b-form-group
+            description="Additional text"
+            label-for="additional-text"
+          >
+            <b-form-textarea
+              id="additional-text"
+              v-model="invoice.additonal_text"
               trim
               style="height: 15em"
             ></b-form-textarea>
@@ -149,7 +166,7 @@
           </b-form-group>
 
           <b-container
-            class="p-0 pt-4 pr-3 mb-4 border border-secondary rounded"
+            class="p-0 pt-4 pl-3 pr-3 mb-4 border border-secondary rounded"
           >
             <draggable
               v-model="invoice.positions"
@@ -157,54 +174,75 @@
               @start="drag = true"
               @end="drag = false"
             >
-              <b-row v-for="position in invoice.positions" :key="position.id">
-                <b-col>
-                  <h2 style="float: left">
-                    <b-icon icon="grip-vertical"></b-icon>
-                  </h2>
-                  <b-form-group
-                    description="Description"
-                    invalid-feedback="Please specify a position description."
-                    :state="position.text.length > 0"
-                  >
-                    <b-form-input
-                      v-model="position.text"
+              <div v-for="(position, idx) in invoice.positions" :key="position.id">
+                <hr v-if="idx != 0" />
+                <b-row>
+                  <b-col>
+                    <b-form-group
+                      description="Date"
+                      invalid-feedback="Please provide a date for the position."
+                      :state="position.date.length > 0"
+                    >
+                      <b-form-input
+                        v-model="position.date"
+                        :state="position.date.length > 0"
+                        trim
+                      ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group
+                      description="Description"
+                      invalid-feedback="Please specify a position description."
                       :state="position.text.length > 0"
-                      trim
-                    ></b-form-input>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group
-                    description="Count"
-                    invalid-feedback="Please select a count > 0."
-                    :state="position.count > 0"
-                  >
-                    <b-form-input
-                      v-model="position.count"
+                    >
+                      <b-form-input
+                        v-model="position.text"
+                        :state="position.text.length > 0"
+                        trim
+                      ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-form-group
+                      description="Count"
+                      invalid-feedback="Please select a count > 0."
                       :state="position.count > 0"
-                      trim
-                      type="number"
-                      number
-                    ></b-form-input>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group
-                    description="Cost per piece"
-                    invalid-feedback="Please select a cost > 0."
-                    :state="position.cost > 0"
-                  >
-                    <b-form-input
-                      v-model="position.cost"
+                    >
+                      <b-form-input
+                        v-model="position.count"
+                        :state="position.count > 0"
+                        trim
+                        type="number"
+                        number
+                      ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group
+                      description="Cost per piece"
+                      invalid-feedback="Please select a cost > 0."
                       :state="position.cost > 0"
-                      trim
-                      type="number"
-                      number
-                    ></b-form-input>
-                  </b-form-group>
-                </b-col>
-              </b-row>
+                    >
+                      <b-form-input
+                        v-model="position.cost"
+                        :state="position.cost > 0"
+                        trim
+                        type="number"
+                        number
+                      ></b-form-input>
+                    </b-form-group>
+                    <h2 style="float: right">
+                      <b-icon icon="grip-vertical"></b-icon>
+                    </h2>
+                    <h2 style="float: right">
+                      <b-icon icon="trash" @click="removePosition(position.id)"></b-icon>
+                    </h2>
+                  </b-col>
+                </b-row>
+              </div>
             </draggable>
           </b-container>
           <b-button
@@ -214,8 +252,43 @@
             @click="addPosition"
             >Add Position</b-button
           >
+
+          <b-form-group
+            description="Accent color"
+            invalid-feedback="Please specify the company accent color."
+          >
+            <b-form-input
+              v-model="invoice.company.accent_color"
+              :state="invoice.company.accent_color.length > 0"
+              trim
+              type="color"
+            ></b-form-input>
+          </b-form-group>
+          <b-form-group
+            description="Text color"
+            invalid-feedback="Please specify the company text color."
+          >
+            <b-form-input
+              v-model="invoice.company.text_color"
+              :state="invoice.company.text_color.length > 0"
+              trim
+              type="color"
+            ></b-form-input>
+          </b-form-group>
+          <b-form-group
+            description="Text color muted"
+            invalid-feedback="Please specify the company muted text color."
+          >
+            <b-form-input
+              v-model="invoice.company.text_color_muted"
+              :state="invoice.company.text_color_muted.length > 0"
+              trim
+              type="color"
+            ></b-form-input>
+          </b-form-group>
         </b-form>
       </b-col>
+
       <b-col class="col-100">
         <div id="pdf">
           <pdf :src="preview"></pdf>
@@ -257,20 +330,28 @@ import { API_URL } from '@/globals';
 
     return {
       preview: undefined,
+      position_count: 1,
       invoice: {
         language: 'de-DE',
+        company: {
+          accent_color: '#2176AE',
+          text_color: '#232020',
+          text_color_muted: '#524D4D',
+        },
         date: today.toISOString().split('T')[0],
         due: due.toISOString().split('T')[0],
         title: 'TATA',
-        address: 'ABB Schweiz AG\nSAS-01\nPostfach 1946\n5401 Baden',
+        address: 'XYZ AG\nPostfach 1234\n8001 Zürich',
         no: 'RE19-24',
-        contact: 'Noah Hüsser',
-        reference: '4500592413',
+        contact: 'John Doe',
+        reference: '123123123',
         text:
-          'Sehr geehrte Damen und Herren\n\nVielen Dank für das entgegengebrachte Vertrauen und die Beauftragung mit der Softwareentwicklung. Gemäss Offerte 19-2019 erlauben wir uns, Ihnen die untenstehenden Leistungen in Rechnung zu stellen.\n\nBest Grüsse  \nNoah Hüsser',
+          'Sehr geehrte Damen und Herren\n\nVielen Dank für das entgegengebrachte Vertrauen und die Beauftragung mit der Softwareentwicklung. Gemäss Offerte XY erlauben wir uns, Ihnen die untenstehenden Leistungen in Rechnung zu stellen.\n\nBest Grüsse  \nJohn Doe',
+        additonal_text: '',
         positions: [
           {
             id: 0,
+            date: '1.1.2024',
             text: 'Test',
             count: 42,
             cost: 120,
@@ -279,15 +360,13 @@ import { API_URL } from '@/globals';
           },
         ],
         currency: 'CHF',
-        vat_rate: 7.7,
+        vat_rate: 8.1,
       },
     };
   },
   watch: {
     invoice: {
       handler(_newValue) {
-        // const s = btoa(unescape(encodeURIComponent(JSON.stringify(this.$data.invoice))));
-        // this.$data.previewUrl = `http://localhost:8000/get/${s}`;
         axios
           .post(`${API_URL}/generate`, this.$data.invoice, {
             responseType: 'arraybuffer',
@@ -304,13 +383,26 @@ import { API_URL } from '@/globals';
   methods: {
     addPosition() {
       this.$data.invoice.positions.push({
-        id: this.$data.invoice.positions.length,
+        id: this.$data.position_count,
+        date: '1.1.2024',
         text: 'Test',
         count: 42,
         cost: 120,
         vat_included: false,
         vat_must: true,
       });
+      this.$data.position_count += 1;
+    },
+    removePosition(positionId) {
+      if (this.$data.invoice.positions.length <= 1) {
+        return;
+      }
+      const idx = this.$data.invoice.positions.findIndex((el: any) => el.id === positionId);
+      if (idx < 0) {
+        console.error('should not happen');
+        return;
+      }
+      this.$delete(this.$data.invoice.positions, idx);
     },
     save() {
       return axios
