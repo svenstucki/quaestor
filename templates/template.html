@@ -260,14 +260,14 @@ table#positions tr.total {
                     <td>{{ t(n="total_excl_vat") }}</td>
                     <td></td>
                     <td></td>
-                    <td>{{ data.currency }}&nbsp;{{ total }}</td>
+                    <td>{{ data.currency }}&nbsp;{{ total | round(precision=2) }}</td>
                 </tr>
                 <tr class="vat">
                     <td></td>
-                    <td>{{ t(n="vat") }} {{ data.vat_rate }}% (Dienstleistung in 2023)</td>
+                    <td>{{ t(n="vat") }} {{ data.vat_rate }}% (Leistungserbringung 2023)</td>
                     <td></td>
                     <td></td>
-                    <td>{{ data.currency }}&nbsp;{{ vat }}</td>
+                    <td>{{ data.currency }}&nbsp;{{ vat | round(precision=2) }}</td>
                 </tr>
                 {% endif %}
                 <tr class="total">
@@ -275,7 +275,7 @@ table#positions tr.total {
                     <td>{{ t(n="total") }}</td>
                     <td></td>
                     <td></td>
-                    <td>{{ data.currency }}&nbsp;{{ total + vat }}</td>
+                    <td>{{ data.currency }}&nbsp;{{ total + vat | round(precision=2) }}</td>
                 </tr>
             </tbody>
         </table>
@@ -298,7 +298,7 @@ table#positions tr.total {
                             IBAN: CH64 0070 0114 8029 6590 5 / Zürcher Kantonalbank
                         </td>
                         <td>
-                            {{ data.currency }} {{ total + vat }}
+                            {{ data.currency }}&nbsp;{{ total + vat | round(precision=2) }}
                         </td>
                     </tr>
                 </tbody>
