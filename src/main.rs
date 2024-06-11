@@ -61,14 +61,24 @@ async fn list<'a>() -> Result<Json<List>, tokio::io::Error> {
 
     let mut invoices = Vec::new();
     for entry in entries {
+        let path = entry.path();
+        let dir_name = path.file_name().unwrap().to_string_lossy().to_string();
+        if dir_name.starts_with(".") {
+            continue;
+        }
+
         let mut versions = Vec::new();
-        let mut entries = std::fs::read_dir(entry.path())
+        let mut entries = std::fs::read_dir(path)
             .unwrap()
             .map(|e| e.unwrap())
             .collect::<Vec<_>>();
         entries.sort_by_key(|e| e.path());
         for entry in entries {
-            versions.push(entry.file_name().to_string_lossy().to_string());
+            let dir_name = entry.file_name().to_string_lossy().to_string();
+            if dir_name.starts_with(".") {
+                continue;
+            }
+            versions.push(dir_name);
         }
         invoices.push(Invoice {
             versions,
